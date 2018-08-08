@@ -14,7 +14,7 @@ cov: tests
 	@echo open htmlcov/index.html
 
 docs:
-	pipenv run make -C docs html
+	pipenv run make -C docs linkcheck html
 	@echo open docs/_build/html/index.html
 
 release:
