@@ -5,3 +5,9 @@ Changelog
 ------------------
 
 * Initial release of `django-template-helpers`
+
+
+0.0.2 (2019-01-15)
+------------------
+
+* Add GenericTemplateView
