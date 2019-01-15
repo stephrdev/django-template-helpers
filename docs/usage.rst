@@ -59,3 +59,27 @@ The output will be
 
     Item: item1
     Item: item2
+
+
+Using GenericTemplateView
+-------------------------
+
+GenericTemplateView is an extension of TemplateView that allows including
+static pages via encoding template name and base directory in the url.
+It can be used e.g. for testing your templates.
+
+.. code-block:: text
+
+    if settings.DEBUG:
+        urlpatterns += [
+            url(
+                r'^(?P<base_dir>[\w\-]+)/((?P<template>[\w\-\/]+)/)?$',
+                GenericTemplateView.as_view()
+            ),
+
+If test templates are located in templates/tests/...
+(e.g. templates/tests/base/buttons/buttons.html) we can now hit them by calling
+e.g. localhost:8000/tests/base/buttons/buttons url.
+
+If no base_dir or template names are given, the view will try to render index.html.
+For more elaborate behavior the ``get_template_names`` method can be overwritten.
