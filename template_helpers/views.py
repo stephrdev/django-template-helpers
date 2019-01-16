@@ -6,7 +6,7 @@ from django.views.generic import TemplateView
 class GenericTemplateView(TemplateView):
     template_base_dir = ''
 
-    def get_template_base_dir(self, **kwargs):
+    def get_template_base_dir(self):
         return self.template_base_dir
 
     def get_template_names(self):
