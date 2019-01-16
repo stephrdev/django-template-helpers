@@ -6,8 +6,8 @@ from django.views.generic import TemplateView
 class GenericTemplateView(TemplateView):
     template_base_dir = ''
 
-        return self.kwargs.get('base_template_dir') or self.base_template_dir
     def get_template_base_dir(self, **kwargs):
+        return self.template_base_dir
 
     def get_template_names(self):
         template_filename = '%s.html' % (self.kwargs.get('template') or 'index')
