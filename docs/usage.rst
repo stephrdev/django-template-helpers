@@ -64,22 +64,26 @@ The output will be
 Using GenericTemplateView
 -------------------------
 
-GenericTemplateView is an extension of TemplateView that allows including
-static pages via encoding template name and base directory in the url.
-It can be used e.g. for testing your templates.
+``GenericTemplateView`` is a ``TemplateView`` extension, that allows including
+static pages. The template path is encoded in url as ``template`` keyword argument,
+and the templates base directory can be set with ``base_template_dir``
+keyword argument in ``GenericTemplateView.as_view`` call.
+
+
+The ``GenericTemplateView`` can be used e.g. for template testing.
 
 .. code-block:: text
 
     if settings.DEBUG:
         urlpatterns += [
             url(
-                r'^(?P<base_dir>[\w\-]+)/((?P<template>[\w\-\/]+)/)?$',
-                GenericTemplateView.as_view()
+                r'^tests/((?P<template>[\w\-\/]+)/)?$',
+                GenericTemplateView.as_view(base_template_dir='mytests')
             ),
 
-If test templates are located in templates/tests/...
-(e.g. templates/tests/base/buttons/buttons.html) we can now hit them by calling
+If test templates are located in templates/mytests/...
+(e.g. templates/mytests/base/buttons/buttons.html) we can now hit them by calling
 e.g. localhost:8000/tests/base/buttons/buttons url.
 
-If no base_dir or template names are given, the view will try to render index.html.
-For more elaborate behavior the ``get_template_names`` method can be overwritten.
+If no base_dir or template are given, the view will try to render index.html.
+For more elaborate behavior the ``get_base_directory`` method can be overwritten.
