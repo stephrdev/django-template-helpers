@@ -27,6 +27,7 @@ Features
 * Template tag to set a new context variable ``set``
 * Template filter to split a string into a list ``split``
 * Context processor to expose selected settings to the templates
+* GenericTemplateView for static pages
 
 
 Requirements

@@ -59,3 +59,32 @@ The output will be
 
     Item: item1
     Item: item2
+
+
+Using GenericTemplateView
+-------------------------
+
+``GenericTemplateView`` is a ``TemplateView`` extension, that allows including
+static pages. The template path is encoded in url as ``template`` keyword argument,
+and the templates base directory can be set with ``template_base_dir``
+keyword argument in ``GenericTemplateView.as_view`` call.
+
+
+The ``GenericTemplateView`` can be used e.g. for template testing.
+
+.. code-block:: text
+
+    if settings.DEBUG:
+        urlpatterns += [
+            url(
+                r'^tests/((?P<template>[\w\-\/]+)/)?$',
+                GenericTemplateView.as_view(template_base_dir='mytests')
+            ),
+
+If test templates are located in templates/mytests/...
+(e.g. templates/mytests/base/buttons/buttons.html) we can now hit them by calling
+e.g. localhost:8000/tests/base/buttons/buttons url.
+
+If no ``template_base_dir`` or ``template`` are specified, the view will try to render index.html.
+For more elaborate behavior overwrite the ``get_template_base_dir`` and ``get_template_names``
+methods.
