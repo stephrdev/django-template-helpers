@@ -47,7 +47,7 @@ def merge_lists(context, as_var, source_list, list_to_merge):
 
     .. code-block:: text
 
-        {% merge_lists 'new_list' list1 list2 %}
+        {% merge_lists 'new_list' source_list list_to_merge %}
         {{ new_list }}
 
     """
