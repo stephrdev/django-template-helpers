@@ -61,6 +61,20 @@ The output will be
     Item: item2
 
 
+Joining two lists in template
+------------------
+
+If you need to join two lists within your templates, use the ``merge_lists`` tag.
+
+.. code-block:: text
+
+    {% load template_helpers %}
+
+    {% merge_lists 'new_list' source_list list_to_merge %}
+
+    {{ new_list }}
+
+
 Using GenericTemplateView
 -------------------------
 

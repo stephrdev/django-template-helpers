@@ -38,3 +38,23 @@ def split(value, sep=' '):
 
     """
     return value.split(sep)
+
+
+@register.simple_tag(name='merge_lists', takes_context=True)
+def merge_lists(context, as_var, source_list, list_to_merge):
+    """
+    The ``merge_lists`` template tag combines two lists under a given name.
+
+    .. code-block:: text
+
+        {% merge_lists 'new_list' list1 list2 %}
+        {{ new_list }}
+
+    """
+    if not source_list and not type(source_list) == list and not type(list_to_merge) == list:
+        context[as_var] = None
+        return ''
+
+    context[as_var] = source_list + list_to_merge
+
+    return ''
