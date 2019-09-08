@@ -62,7 +62,7 @@ The output will be
 
 
 Joining two lists in template
-------------------
+-----------------------------
 
 If you need to join two lists within your templates, use the ``merge_lists`` tag.
 
@@ -73,6 +73,46 @@ If you need to join two lists within your templates, use the ``merge_lists`` tag
     {% merge_lists 'new_list' source_list list_to_merge %}
 
     {{ new_list }}
+
+
+Add object attributes to context of included template
+-----------------------------------------------------
+
+If you have an object with many attributes which need to be directly accessible
+in included template, use the ``include_with`` tag.
+
+Suppose you have a Person model:
+
+.. code-block:: text
+
+  class Person(models.Model):
+    first_name = models.CharField(max_length=30)
+    last_name = models.CharField(max_length=30)
+
+Define exposed attributes on it:
+
+.. code-block:: text
+
+  class Person(models.Model):
+    exposed = ['first_name', 'last_name']
+    ...
+
+Then you can use ``include_with`` template tag:
+
+.. code-block:: text
+
+    {% load template_helpers %}
+
+    {% include_with person 'some/template.html' %}
+
+Instead of
+
+.. code-block:: text
+
+    {% include 'some/template.html' with first_name=person.first_name last_name=person.last_name%}
+
+The with statement is still available if you want to overwrite some of the
+exposed settings or add additional ones.
 
 
 Using GenericTemplateView
