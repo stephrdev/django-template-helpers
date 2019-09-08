@@ -65,12 +65,11 @@ def merge_lists(context, as_var, source_list, list_to_merge):
 class IncludeWithNode(IncludeNode):
 
     def __init__(
-            self, with_object, template, *args, extra_context=None,
-            isolated_context=False, **kwargs):
+            self, with_object, template, *args, extra_context=None, **kwargs):
         self.with_object = django_template.Variable(with_object)
         super().__init__(
             template, *args, extra_context=extra_context,
-            isolated_context=isolated_context, **kwargs)
+            isolated_context=False, **kwargs)
 
     def render(self, context):
         obj = None
@@ -108,8 +107,6 @@ def _parse_with_options(bits, start_position, parser):
             if not value:
                 raise TemplateSyntaxError(
                     '"with" in %r tag needs at least one keyword argument.' % bits[0])
-        elif option == 'only':
-            value = True
         else:
             raise TemplateSyntaxError(
                 'Unknown argument for %r tag: %r.' % (bits[0], option))
@@ -137,6 +134,7 @@ def do_include_with(parser, token):
 
         {% include_with obj 'path/to/included/template.html' with foo='bar'%}
 
+    It does not support only option .
     """
     bits = token.split_contents()
 
@@ -149,9 +147,7 @@ def do_include_with(parser, token):
 
     options = _parse_with_options(bits, 3, parser)
 
-    isolated_context = options.get('only', False)
     namemap = options.get('with', {})
     bits[1] = construct_relative_path(parser.origin.template_name, bits[1])
     return IncludeWithNode(
-        bits[1], parser.compile_filter(bits[2]), extra_context=namemap,
-        isolated_context=isolated_context)
+        bits[1], parser.compile_filter(bits[2]), extra_context=namemap)
