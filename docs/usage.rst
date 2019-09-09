@@ -61,6 +61,24 @@ The output will be
     Item: item2
 
 
+Add extra span element inside text
+----------------------------------
+
+To add extra <span> element inside a string use ``starspan`` filter.
+
+.. code-block:: text
+
+    class SomeModel(models.Model):
+      headline = models.CharField(help_text=_('Use ***my text*** to highlight "my text".'))
+      ...
+
+.. code-block:: text
+
+    {% load template_helpers %}
+
+    {{ headline|starspan }}
+
+
 Joining two lists in template
 -----------------------------
 

@@ -19,6 +19,13 @@ class TestTemplateTags:
         ).render(context)
         assert context['test_var'] == ['foo', 'bar', 'baz']
 
+    def test_starspan(self):
+        context = Context({'headline': 'Some ***headline*** text.'})
+        result = Template(
+            '{% load template_helpers %}{{ headline|starspan }}'
+        ).render(context)
+        assert result == 'Some <span>headline</span> text.'
+
     def test_split_custom_sep(self):
         context = Context()
         Template(

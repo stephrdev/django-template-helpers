@@ -1,8 +1,13 @@
+import re
+
 from django import template as django_template
 from django.template.base import TemplateSyntaxError, token_kwargs
 from django.template.defaultfilters import stringfilter
 from django.template.loader_tags import IncludeNode, construct_relative_path
+from django.utils.html import conditional_escape, mark_safe
 
+
+STARSPAN_RE = re.compile(r'(\*\*\*)(.+?)\1')
 
 register = django_template.Library()
 
@@ -40,6 +45,21 @@ def split(value, sep=' '):
 
     """
     return value.split(sep)
+
+
+@register.filter
+@stringfilter
+def starspan(value):
+    """
+    The ``starspan`` template filter adds extra span element to star
+    indicated text ("***text***").
+
+    .. code-block:: text
+
+        {{ some_text_variable|starspan }}
+
+    """
+    return mark_safe(STARSPAN_RE.sub(r'<span>\2</span>', conditional_escape(value)))
 
 
 @register.simple_tag(name='merge_lists', takes_context=True)
