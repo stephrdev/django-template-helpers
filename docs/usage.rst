@@ -82,15 +82,23 @@ To add extra <span> element inside a string use ``starspan`` filter.
 Joining two lists in template
 -----------------------------
 
-If you need to join two lists within your templates, use the ``merge_lists`` tag.
+If you need to join two lists within your templates, use the ``merge_lists`` filter.
 
 .. code-block:: text
 
     {% load template_helpers %}
 
-    {% merge_lists 'new_list' source_list list_to_merge %}
+    {% for element in first_list|merge_lists:second_list %}
+      {{ element }}
+    {% endfor %}
 
-    {{ new_list }}
+To make the result list persistent use ``merge_lists`` filter in combination with ``set`` template tag.
+
+.. code-block:: text
+
+    {% load template_helpers %}
+
+    {% set new_list=first_list|merge_lists:second_list %}
 
 
 Add object attributes to context of included template

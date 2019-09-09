@@ -62,24 +62,30 @@ def starspan(value):
     return mark_safe(STARSPAN_RE.sub(r'<span>\2</span>', conditional_escape(value)))
 
 
-@register.simple_tag(name='merge_lists', takes_context=True)
-def merge_lists(context, as_var, source_list, list_to_merge):
+@register.filter
+def merge_lists(value, list_to_merge):
     """
-    The ``merge_lists`` template tag combines two lists under a given name.
+    The ``merge_lists`` filter combines two lists.
 
     .. code-block:: text
 
-        {% merge_lists 'new_list' source_list list_to_merge %}
-        {{ new_list }}
+        {% for element in first_list|merge_lists:second_list %}
+            {{ element }}
+        {% endfor %}
+
+    To make the result list persistent use in combination with set tag.
+
+    .. code-block:: text
+
+        {% set new_list=first_list|merge_lists:second_list %}
 
     """
-    if not source_list and not type(source_list) == list and not type(list_to_merge) == list:
-        context[as_var] = None
-        return ''
+    if not type(value) == list or not type(list_to_merge) == list:
+        raise TemplateSyntaxError(
+           'Value and argument for merge_lists filter should be both of type '
+           'list. Got "{0}" and "{1}".'.format(value, list_to_merge))
 
-    context[as_var] = source_list + list_to_merge
-
-    return ''
+    return value + list_to_merge
 
 
 class IncludeWithNode(IncludeNode):
