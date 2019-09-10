@@ -1,5 +1,6 @@
 import re
 
+from django import VERSION as django_version
 from django import template
 from django.template.base import TemplateSyntaxError
 from django.template.defaultfilters import stringfilter
@@ -142,9 +143,15 @@ def do_include_with(parser, token):
 
     """
     bits = token.split_contents()
-    options = parse_bits(
-        parser, bits[1:], ['with_object', 'template_name'], False, True, None,
-        [], None, False, 'include_with')
+
+    if django_version[0] >= 2:
+        options = parse_bits(
+            parser, bits[1:], ['with_object', 'template_name'], False, True,
+            None, [], None, False, 'include_with')
+    else:
+        options = parse_bits(
+            parser, bits[1:], ['with_object', 'template_name'], False, True,
+            None, False, 'include_with')
 
     bits[2] = construct_relative_path(parser.origin.template_name, bits[2])
     template_filter = parser.compile_filter(bits[2])
