@@ -1,15 +1,16 @@
 import re
 
-from django import template as django_template
-from django.template.base import TemplateSyntaxError, token_kwargs
+from django import template
+from django.template.base import TemplateSyntaxError
 from django.template.defaultfilters import stringfilter
+from django.template.library import parse_bits
 from django.template.loader_tags import IncludeNode, construct_relative_path
 from django.utils.html import conditional_escape, mark_safe
 
 
 STARSPAN_RE = re.compile(r'(\*\*\*)(.+?)\1')
 
-register = django_template.Library()
+register = template.Library()
 
 
 @register.simple_tag(name='set', takes_context=True)
@@ -91,89 +92,62 @@ def merge_lists(value, list_to_merge):
 class IncludeWithNode(IncludeNode):
 
     def __init__(
-            self, with_object, template, *args, extra_context=None, **kwargs):
-        self.with_object = django_template.Variable(with_object)
+            self, with_object, template_name, *args, extra_context=None,
+            **kwargs):
+        self.with_object = template.Variable(with_object)
         super().__init__(
-            template, *args, extra_context=extra_context,
+            template_name, *args, extra_context=extra_context,
             isolated_context=False, **kwargs)
 
     def render(self, context):
         obj = None
         try:
             obj = self.with_object.resolve(context)
-        except django_template.VariableDoesNotExist:
-            pass
+        except template.VariableDoesNotExist as exc:
+            raise TemplateSyntaxError(
+                'Object {0} needs to be available in template context.'.format(
+                    self.with_object.var)) from exc
+        if not obj:
+            raise TemplateSyntaxError(
+               'Object {0} is None. Provide corrct value.'.format(
+                    self.with_object.var))
 
-        exposed_vars = getattr(obj, 'exposed', [])
-        for var in exposed_vars:
-            context[var] = getattr(obj, var)
+        exposed_attrs = getattr(obj, 'template_exposed_attributes', None)
+        if exposed_attrs is None or type(exposed_attrs) != list:
+            raise TemplateSyntaxError(
+                'Object {0} should have template_exposed_attributes lisset'.format(
+                    self.with_object.var))
 
+        for exposed_attr in exposed_attrs:
+            context[exposed_attr] = getattr(obj, exposed_attr)
         return super().render(context)
-
-
-def _parse_with_options(bits, start_position, parser):
-    """
-    Helper for parsig with templatetag arguments.
-
-    Based on:
-    https://github.com/django/django/blob/master/django/template/loader_tags.py
-    #L295-L312
-
-    """
-    options = {}
-    remaining_bits = bits[start_position:]
-
-    while remaining_bits:
-        option = remaining_bits.pop(0)
-        if option in options:
-            raise TemplateSyntaxError(
-                'The %r option was specified more than once.' % option)
-        if option == 'with':
-            value = token_kwargs(remaining_bits, parser, support_legacy=False)
-            if not value:
-                raise TemplateSyntaxError(
-                    '"with" in %r tag needs at least one keyword argument.' % bits[0])
-        else:
-            raise TemplateSyntaxError(
-                'Unknown argument for %r tag: %r.' % (bits[0], option))
-        options[option] = value
-
-    return options
 
 
 @register.tag('include_with')
 def do_include_with(parser, token):
     """
-    The ``include_with`` extends include template tag to avoid long with statements.
-    It takes object as first argument and adds its exposed attributes
-    into context available in included template. It requires that object has
-    list of exposed attributes.
+    Include template with object attributes injected to context.
+    It takes object and template path as arguments.
+    Object should have template_exposed_attributes list defined.
 
     .. code-block:: text
 
         {% include_with obj 'path/to/included/template.html' %}
 
-    It is also possible to use with syntax to overwrite some of exposed
-    attributes or add new ones.
+    It is also possible to overvrite / add additional kwaegs.
 
     .. code-block:: text
 
-        {% include_with obj 'path/to/included/template.html' with foo='bar'%}
+        {% include_with obj 'path/to/included/template.html' foo='bar'%}
 
-    It does not support only option .
     """
     bits = token.split_contents()
+    options = parse_bits(
+        parser, bits[1:], ['with_object', 'template_name'], False, True, None,
+        [], None, False, 'include_with')
 
-    if len(bits) < 3:
-        raise TemplateSyntaxError(
-            "%r tag takes at least two argument: the object with exposed "
-            "attributes and the name of the template to "
-            "be included." % bits[0]
-        )
+    bits[2] = construct_relative_path(parser.origin.template_name, bits[2])
+    template_filter = parser.compile_filter(bits[2])
 
-    options = _parse_with_options(bits, 3, parser)
-
-    namemap = options.get('with', {})
-    bits[1] = construct_relative_path(parser.origin.template_name, bits[1])
     return IncludeWithNode(
-        bits[1], parser.compile_filter(bits[2]), extra_context=namemap)
+        bits[1], template_filter, extra_context=options[1])

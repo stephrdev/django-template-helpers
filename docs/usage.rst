@@ -120,7 +120,7 @@ Define exposed attributes on it:
 .. code-block:: text
 
   class Person(models.Model):
-    exposed = ['first_name', 'last_name']
+    template_exposed_attributes = ['first_name', 'last_name']
     ...
 
 Then you can use ``include_with`` template tag:
@@ -135,10 +135,15 @@ Instead of
 
 .. code-block:: text
 
-    {% include 'some/template.html' with first_name=person.first_name last_name=person.last_name%}
+    {% include 'some/template.html' with first_name=person.first_name last_name=person.last_name %}
 
-The with statement is still available if you want to overwrite some of the
-exposed settings or add additional ones.
+It is also possible to overwrite / add additional kwargs.
+
+.. code-block:: text
+
+    {% load template_helpers %}
+
+    {% include_with person 'some/template.html' first_name='Laurel' best_friend='Hardy' %}
 
 
 Using GenericTemplateView

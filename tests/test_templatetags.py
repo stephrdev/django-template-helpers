@@ -68,7 +68,7 @@ class TestTemplateTags:
 
     def test_include_with(self):
         class MockObj:
-            exposed = ['foo', 'bar', 'bazz']
+            template_exposed_attributes = ['foo', 'bar', 'bazz']
             foo = 'test1'
             bar = 'test2'
             bazz = 'test3'
@@ -77,24 +77,38 @@ class TestTemplateTags:
         context = Context({'test_obj': MockObj()})
         result = Template(
             '{% load template_helpers %}'
-            '{% include_with test_obj "test_include_with.html" with bazz="new_bazz" %}'
+            '{% include_with test_obj "test_include_with.html" bazz="new_bazz" %}'
         ).render(context)
         assert result.strip() == 'test1 test2 new_bazz'
 
     def test_include_with_no_object(self):
         context = Context({})
-        result = Template(
-            '{% load template_helpers %}'
-            '{% include_with test_obj "test_include_with.html" with bazz="new_bazz" %}'
-        ).render(context)
-        assert result.strip() == 'new_bazz'
+        with pytest.raises(TemplateSyntaxError):
+            Template(
+                '{% load template_helpers %}'
+                '{% include_with test_obj "test_include_with.html" bazz="new_bazz" %}'
+            ).render(context)
+
+    def test_include_with_no_template_exposed_attributes(self):
+        class MockObj:
+            foo = 'test1'
+            bar = 'test2'
+            bazz = 'test3'
+            eggs = 'test4'
+
+        context = Context({'test_obj': MockObj()})
+        with pytest.raises(TemplateSyntaxError):
+            Template(
+                '{% load template_helpers %}'
+                '{% include_with test_obj "test_include_with.html" %}'
+            ).render(context)
 
     def test_include_with_incorrect_args(self):
         context = Context({})
         with pytest.raises(TemplateSyntaxError):
             Template(
                 '{% load template_helpers %}'
-                '{% include_with test_obj "test_include_with.html" with var="a" with var="a" %}'
+                '{% include_with test_obj "test_include_with.html" with var="a" %}'
             ).render(context)
 
         with pytest.raises(TemplateSyntaxError):
