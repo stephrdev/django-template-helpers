@@ -134,3 +134,10 @@ class TestTemplateTags:
                 '{% load template_helpers %}'
                 '{% include_with "test_include_with.html" %}'
             ).render(context)
+
+        context = Context({'test_obj': None})
+        with pytest.raises(TemplateSyntaxError):
+            Template(
+                '{% load template_helpers %}'
+                '{% include_with test_obj "test_include_with.html" %}'
+            ).render(context)
