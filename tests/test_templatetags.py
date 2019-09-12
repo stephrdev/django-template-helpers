@@ -33,37 +33,37 @@ class TestTemplateTags:
         ).render(context)
         assert context['test_var'] == ['foo', 'bar baz', 'lorem']
 
-    def test_merge_lists(self):
+    def test_merge_list(self):
         context = Context({'first_list': ['a', 'b'], 'second_list': ['c', 'd']})
         result = Template(
             '{% load template_helpers %}'
-            '{% for element in first_list|merge_lists:second_list %}'
+            '{% for element in first_list|merge_list:second_list %}'
             '{{ element }}'
             '{% endfor %}'
         ).render(context)
         assert result == 'abcd'
 
-    def test_merge_lists_name_result(self):
+    def test_merge_list_name_result(self):
         context = Context({'first_list': ['a', 'b'], 'second_list': ['c', 'd']})
         Template(
             '{% load template_helpers %}'
-            '{% set new_list=first_list|merge_lists:second_list %}'
+            '{% set new_list=first_list|merge_list:second_list %}'
         ).render(context)
         assert context['new_list'] == ['a', 'b', 'c', 'd']
 
-    def test_merge_lists_incorrect_call(self, settings):
+    def test_merge_list_incorrect_call(self, settings):
         context = Context({'first_list': 'foo', 'second_list': 'bar'})
 
         with pytest.raises(TemplateSyntaxError):
             Template(
                 '{% load template_helpers %}'
-                '{{ first_list|merge_lists:second_list }}'
+                '{{ first_list|merge_list:second_list }}'
             ).render(context)
 
         with pytest.raises(TemplateSyntaxError):
             Template(
                 '{% load template_helpers %}'
-                '{{ first_list|merge_lists }}'
+                '{{ first_list|merge_list }}'
             ).render(context)
 
     def test_include_with(self):

@@ -65,13 +65,13 @@ def starspan(value):
 
 
 @register.filter
-def merge_lists(value, list_to_merge):
+def merge_list(value, list_to_merge):
     """
-    The ``merge_lists`` filter combines two lists.
+    The ``merge_list`` filter combines two lists.
 
     .. code-block:: text
 
-        {% for element in first_list|merge_lists:second_list %}
+        {% for element in first_list|merge_list:second_list %}
             {{ element }}
         {% endfor %}
 
