@@ -61,6 +61,91 @@ The output will be
     Item: item2
 
 
+Add extra span element inside text
+----------------------------------
+
+To add extra <span> element inside a string use ``starspan`` filter.
+
+.. code-block:: text
+
+    class SomeModel(models.Model):
+      headline = models.CharField(help_text=_('Use ***my text*** to highlight "my text".'))
+      ...
+
+.. code-block:: text
+
+    {% load template_helpers %}
+
+    {{ headline|starspan }}
+
+
+Append a list to another list in template
+-----------------------------------------
+
+If you need to join lists within your templates, use the ``merge_list`` filter.
+
+.. code-block:: text
+
+    {% load template_helpers %}
+
+    {% for element in first_list|merge_list:second_list %}
+      {{ element }}
+    {% endfor %}
+
+To make the result list persistent use ``merge_list`` filter in combination with ``set`` template tag.
+
+.. code-block:: text
+
+    {% load template_helpers %}
+
+    {% set new_list=first_list|merge_list:second_list %}
+
+
+Add object attributes to context of included template
+-----------------------------------------------------
+
+If you have an object with many attributes which need to be directly accessible
+in included template, use the ``include_with`` tag.
+
+Suppose you have a Person model:
+
+.. code-block:: text
+
+  class Person(models.Model):
+    first_name = models.CharField(max_length=30)
+    last_name = models.CharField(max_length=30)
+
+Define exposed attributes on it:
+
+.. code-block:: text
+
+  class Person(models.Model):
+    template_exposed_attributes = ['first_name', 'last_name']
+    ...
+
+Then you can use ``include_with`` template tag:
+
+.. code-block:: text
+
+    {% load template_helpers %}
+
+    {% include_with person 'some/template.html' %}
+
+Instead of
+
+.. code-block:: text
+
+    {% include 'some/template.html' with first_name=person.first_name last_name=person.last_name %}
+
+It is also possible to overwrite / add additional kwargs.
+
+.. code-block:: text
+
+    {% load template_helpers %}
+
+    {% include_with person 'some/template.html' first_name='Laurel' best_friend='Hardy' %}
+
+
 Using GenericTemplateView
 -------------------------
 

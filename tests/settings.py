@@ -1,4 +1,8 @@
+import os
+
+
 DEBUG = True
+PROJECT_DIR = os.path.dirname(os.path.dirname(__file__))
 
 SECRET_KEY = 'test'
 
@@ -21,6 +25,7 @@ INSTALLED_APPS = [
 
 TEMPLATES = [{
     'BACKEND': 'django.template.backends.django.DjangoTemplates',
+    'DIRS': [os.path.join(PROJECT_DIR, 'tests/resources/templates')],
     'APP_DIRS': True,
     'OPTIONS': {
         'context_processors': [
