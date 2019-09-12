@@ -116,7 +116,7 @@ class IncludeWithNode(IncludeNode):
         exposed_attrs = getattr(obj, 'template_exposed_attributes', None)
         if exposed_attrs is None or type(exposed_attrs) != list:
             raise TemplateSyntaxError(
-                'Object {0} should have template_exposed_attributes lisset'.format(
+                'Object {0} should have template_exposed_attributes set'.format(
                     self.with_object.var))
 
         for exposed_attr in exposed_attrs:
