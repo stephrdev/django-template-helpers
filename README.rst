@@ -5,16 +5,17 @@ django-template-helpers
    :target: https://pypi.org/project/django-template-helpers/
    :alt: Latest Version
 
-.. image:: https://codecov.io/gh/moccu/django-template-helpers/branch/master/graph/badge.svg
-   :target: https://codecov.io/gh/moccu/django-template-helpers
+.. image:: https://github.com/stephrdev/django-template-helpers/workflows/Test/badge.svg?branch=master
+   :target: https://github.com/stephrdev/django-template-helpers/actions?workflow=Test
+   :alt: CI Status
+
+.. image:: https://codecov.io/gh/stephrdev/django-template-helpers/branch/master/graph/badge.svg
+   :target: https://codecov.io/gh/stephrdev/django-template-helpers
    :alt: Coverage Status
 
 .. image:: https://readthedocs.org/projects/django-template-helpers/badge/?version=latest
    :target: https://django-template-helpers.readthedocs.io/en/stable/?badge=latest
    :alt: Documentation Status
-
-.. image:: https://travis-ci.org/moccu/django-template-helpers.svg?branch=master
-   :target: https://travis-ci.org/moccu/django-template-helpers
 
 
 *django-template-helpers* provides template tags to add missing features to the
@@ -39,25 +40,15 @@ django-template-helpers supports Python 3 only and requires at least Django 1.11
 Prepare for development
 -----------------------
 
-A Python 3.6 interpreter is required in addition to pipenv.
+A Python 3 interpreter is required in addition to poetry.
 
 .. code-block:: shell
 
-    $ pipenv install --python 3.6 --dev
-    $ pipenv shell
-    $ pip install -e .
+    $ poetry install
 
 
 Now you're ready to run the tests:
 
 .. code-block:: shell
 
-    $ pipenv run py.test
-
-
-Resources
----------
-
-* `Documentation <https://django-template-helpers.readthedocs.org/>`_
-* `Bug Tracker <https://github.com/moccu/django-template-helpers/issues>`_
-* `Code <https://github.com/moccu/django-template-helpers/>`_
+    $ make tests
