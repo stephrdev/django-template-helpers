@@ -84,21 +84,23 @@ def merge_list(value, list_to_merge):
     """
     if not type(value) == list or not type(list_to_merge) == list:
         raise TemplateSyntaxError(
-           'Value and argument for merge_lists filter should be both of type '
-           'list. Got "{0}" and "{1}".'.format(value, list_to_merge))
+            'Value and argument for merge_lists filter should be both of type '
+            'list. Got "{0}" and "{1}".'.format(value, list_to_merge)
+        )
 
     return value + list_to_merge
 
 
 class IncludeWithNode(IncludeNode):
-
-    def __init__(
-            self, with_object, template_name, *args, extra_context=None,
-            **kwargs):
+    def __init__(self, with_object, template_name, *args, extra_context=None, **kwargs):
         self.with_object = template.Variable(with_object)
         super().__init__(
-            template_name, *args, extra_context=extra_context,
-            isolated_context=False, **kwargs)
+            template_name,
+            *args,
+            extra_context=extra_context,
+            isolated_context=False,
+            **kwargs,
+        )
 
     def render(self, context):
         obj = None
@@ -107,17 +109,21 @@ class IncludeWithNode(IncludeNode):
         except template.VariableDoesNotExist as exc:
             raise TemplateSyntaxError(
                 'Object {0} needs to be available in template context.'.format(
-                    self.with_object.var)) from exc
+                    self.with_object.var
+                )
+            ) from exc
         if not obj:
             raise TemplateSyntaxError(
-               'Object {0} is None. Provide corrct value.'.format(
-                    self.with_object.var))
+                'Object {0} is None. Provide corrct value.'.format(self.with_object.var)
+            )
 
         exposed_attrs = getattr(obj, 'template_exposed_attributes', None)
         if exposed_attrs is None or not isinstance(exposed_attrs, (list, tuple)):
             raise TemplateSyntaxError(
                 'Object {0} should have template_exposed_attributes set'.format(
-                    self.with_object.var))
+                    self.with_object.var
+                )
+            )
 
         for exposed_attr in exposed_attrs:
             context[exposed_attr] = getattr(obj, exposed_attr)
@@ -146,15 +152,30 @@ def do_include_with(parser, token):
 
     if django_version[0] >= 2:
         options = parse_bits(
-            parser, bits[1:], ['with_object', 'template_name'], False, True,
-            None, [], None, False, 'include_with')
+            parser,
+            bits[1:],
+            ['with_object', 'template_name'],
+            False,
+            True,
+            None,
+            [],
+            None,
+            False,
+            'include_with',
+        )
     else:
         options = parse_bits(
-            parser, bits[1:], ['with_object', 'template_name'], False, True,
-            None, False, 'include_with')
+            parser,
+            bits[1:],
+            ['with_object', 'template_name'],
+            False,
+            True,
+            None,
+            False,
+            'include_with',
+        )
 
     bits[2] = construct_relative_path(parser.origin.template_name, bits[2])
     template_filter = parser.compile_filter(bits[2])
 
-    return IncludeWithNode(
-        bits[1], template_filter, extra_context=options[1])
+    return IncludeWithNode(bits[1], template_filter, extra_context=options[1])

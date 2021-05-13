@@ -2,7 +2,6 @@ from template_helpers.views import GenericTemplateView
 
 
 class TestGenericTemplateView:
-
     def test_get_template_names(self):
         view = GenericTemplateView()
         view.kwargs = {}

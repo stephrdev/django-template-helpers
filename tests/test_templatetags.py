@@ -4,26 +4,21 @@ from django.template.exceptions import TemplateSyntaxError
 
 
 class TestTemplateTags:
-
     def test_set_tag(self):
         context = Context()
-        Template(
-            '{% load template_helpers %}{% set test_var="Some data" %}'
-        ).render(context)
+        Template('{% load template_helpers %}{% set test_var="Some data" %}').render(context)
         assert context['test_var'] == 'Some data'
 
     def test_split_default_sep(self):
         context = Context()
-        Template(
-            '{% load template_helpers %}{% set test_var="foo bar baz"|split %}'
-        ).render(context)
+        Template('{% load template_helpers %}{% set test_var="foo bar baz"|split %}').render(
+            context
+        )
         assert context['test_var'] == ['foo', 'bar', 'baz']
 
     def test_starspan(self):
         context = Context({'headline': 'Some ***headline*** text.'})
-        result = Template(
-            '{% load template_helpers %}{{ headline|starspan }}'
-        ).render(context)
+        result = Template('{% load template_helpers %}{{ headline|starspan }}').render(context)
         assert result == 'Some <span>headline</span> text.'
 
     def test_split_custom_sep(self):
@@ -46,8 +41,7 @@ class TestTemplateTags:
     def test_merge_list_name_result(self):
         context = Context({'first_list': ['a', 'b'], 'second_list': ['c', 'd']})
         Template(
-            '{% load template_helpers %}'
-            '{% set new_list=first_list|merge_list:second_list %}'
+            '{% load template_helpers %}{% set new_list=first_list|merge_list:second_list %}'
         ).render(context)
         assert context['new_list'] == ['a', 'b', 'c', 'd']
 
@@ -56,15 +50,11 @@ class TestTemplateTags:
 
         with pytest.raises(TemplateSyntaxError):
             Template(
-                '{% load template_helpers %}'
-                '{{ first_list|merge_list:second_list }}'
+                '{% load template_helpers %}{{ first_list|merge_list:second_list }}'
             ).render(context)
 
         with pytest.raises(TemplateSyntaxError):
-            Template(
-                '{% load template_helpers %}'
-                '{{ first_list|merge_list }}'
-            ).render(context)
+            Template('{% load template_helpers %}{{ first_list|merge_list }}').render(context)
 
     def test_include_with(self):
         class MockObj:
@@ -131,8 +121,7 @@ class TestTemplateTags:
 
         with pytest.raises(TemplateSyntaxError):
             Template(
-                '{% load template_helpers %}'
-                '{% include_with "test_include_with.html" %}'
+                '{% load template_helpers %}{% include_with "test_include_with.html" %}'
             ).render(context)
 
         context = Context({'test_obj': None})
